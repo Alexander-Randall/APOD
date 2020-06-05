@@ -7,6 +7,7 @@ using APOD.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace APOD.Controllers
 {
@@ -21,10 +22,19 @@ namespace APOD.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<APODItem>>> GetAPODItems()
+        public async Task<ActionResult<IEnumerable<APODItem>>> GetNasaData()
         {
-            HttpResponseMessage response = Client.GetAsync(https://api.nasa.gov/planetary/apod);
+            HttpResponseMessage response = await Client.GetAsync("https://api.nasa.gov/planetary/apod?api_key=ErinR37q35EL8MkJOwu2h8XxH0htwDk6cYRDGJ84");
+            if (response.IsSuccessStatusCode)
+            {
+                string itemString = await response.Content.ReadAsStringAsync();
+                APODItem item = JsonConvert.DeserializeObject<APODItem>(itemString);
+                _context.APODItems.Add(item);
+                await _context.SaveChangesAsync();
+            }
+            
             return await _context.APODItems.ToListAsync();
         }
     }
