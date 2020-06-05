@@ -13,6 +13,6 @@ namespace APOD.Models
         {
         }
 
-        public DbSet<APODItem> TodoItems { get; set; }
+        public DbSet<APODItem> APODItems { get; set; }
     }
 }
